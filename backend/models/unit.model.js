@@ -1,0 +1,33 @@
+import mongoose, { Schema, Types } from "mongoose";
+
+// Schema that represents a warehouses's stock of a product
+// product: product type stored
+// warehouse: warehouse product is stored in
+// quantity: quantity stored in warehouse
+// location: zone-aisle-bay-level-position of item
+const unitSchema = new Schema({
+    product: {
+        type: Types.ObjectId,
+        ref: "Product",
+        required: true
+    },
+
+    warehouse: {
+        type: Types.ObjectId,
+        ref: "Warehouse",
+        required: true
+    },
+
+    quantity: {
+        type: Number,
+        required: true
+    },
+
+    location: {
+        type: String,
+    }
+});
+
+const Unit = mongoose.model("Unit", unitSchema, "units");
+
+export default Unit;
