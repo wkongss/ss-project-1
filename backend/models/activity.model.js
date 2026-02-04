@@ -8,11 +8,13 @@ import mongoose, { Schema, Types } from "mongoose";
 const activitySchema = new Schema({
     action: {
         type: String,
-        required: true
+        required: true,
+        enum: ["create", "update", "delete", "transfer"]
     },
 
     affected: {
         type: [Types.ObjectId],
+        ref: "Warehouse",
         required: true
     },
 
