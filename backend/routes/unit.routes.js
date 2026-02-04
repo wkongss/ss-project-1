@@ -1,24 +1,25 @@
 import { Router } from "express";
+import UnitController from "../controllers/unit.controller.js";
 
 const router = Router();
 
 router.route("/")
     .get((req, res) => {
-        WarehouseController.getAllWarehouses(req, res);
+        UnitController.getAllUnits(req, res);
     })
     .post((req, res) => {
-        WarehouseController.createWarehouse(req, res);
+        UnitController.createUnit(req, res);
     })
     .put((req, res) => {
-        WarehouseController.updateWarehouse(req, res);
+        UnitController.updateUnit(req, res);
     })
 
 router.route("/:id")
     .get((req, res) => {
-        WarehouseController.getWarehouseById(req, res);
+        UnitController.getUnitById(req, res);
     })
     .delete((req, res) => {
-        WarehouseController.deleteWarehouse(req, res);
+        UnitController.deleteUnit(req, res);
     });
 
 export default router;
