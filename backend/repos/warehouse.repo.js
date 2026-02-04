@@ -51,9 +51,6 @@ function updateWarehouse(_id, newData) {
     return Warehouse.findByIdAndUpdate(_id, newData).exec();
 }
 
-/**
- * Repo for warehouses
- */
 const WarehouseRepo = {
     findAll, findWarehouseById, createWarehouse, deleteWarehouse, updateWarehouse
 };
