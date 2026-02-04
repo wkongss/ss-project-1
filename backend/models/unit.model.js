@@ -26,6 +26,7 @@ const unitSchema = new Schema({
 
     location: {
         type: String,
+        match: /Z\d{3}-A\d{3}-B\d{3}-L\d{1,3}-P\d{1,3}/
     }
 });
 
