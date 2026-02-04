@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+import "dotenv/config";
 
 import ProductRouter from "./routes/product.routes.js";
 import UnitRouter from "./routes/unit.routes.js";
@@ -8,7 +10,11 @@ import ActivityRouter from "./routes/activity.routes.js";
 import logger from "./middleware/logger.js";
 
 const app = express();
+const allowedOrigins = process.env.WHITELIST;
 
+app.use(cors({
+    origin: allowedOrigins
+}));
 app.use(express.json());
 app.use(logger);
 
