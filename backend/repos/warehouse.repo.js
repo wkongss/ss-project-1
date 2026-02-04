@@ -48,7 +48,7 @@ function deleteWarehouse(_id) {
  * @returns {Promise<Document>} the updated document (if available)
  */
 function updateWarehouse(_id, newData) {
-    return Warehouse.findByIdAndUpdate(_id, newData).exec();
+    return Warehouse.findByIdAndUpdate(_id, newData, { returnDocument: "after" }).exec();
 }
 
 const WarehouseRepo = {
