@@ -12,8 +12,20 @@ function findAll() {
 }
 
 /**
+ * Finds and returns a unit by ID
+ * @param {string} _id The id of the unit
+ * @returns {Promise<Unit | null>} A promise containing the unit
+ */
+function findUnitById(_id) {
+    return Unit
+        .findById(_id)
+        ?.populate(["warehouse", "product"])
+        ?.exec();
+};
+
+/**
  * Finds and returns all stock from a given warehouse
- * @param {string} _id the ID of the warehouse
+ * @param {string} _id The id of the warehouse
  * @returns {Promise<Unit[]>} A promise containing all stock from the warehouse
  */
 function findUnitsByWarehouse(_id) {
@@ -25,7 +37,7 @@ function findUnitsByWarehouse(_id) {
 
 /**
  * Finds and returns all stock of a give product type
- * @param {string} _id the ID of the product
+ * @param {string} _id The id of the product
  * @returns {Promise<Unit[]>} A promise containing all stock with given product id
  */
 function findUnitsByProduct(_id) {
@@ -37,7 +49,8 @@ function findUnitsByProduct(_id) {
 
 /**
  * Finds and returns a unique stock of a give warehouse and product id
- * @param {string} _id the ID of the product
+ * @param {string} warehouseId The id of the warehouse
+ * @param {string} productId The id of the product
  * @returns {Promise<Unit>} A promise containing a specific unit
  */
 function findUnitByWarehouseAndProduct(warehouseId, productId) {
@@ -66,8 +79,7 @@ function createUnit(data) {
  * @returns {Promise<Unit>} A promise with the updated unit
  */
 async function updateUnit(_id, newData) {
-    console.log(await Unit.findById(_id.toString()));
-    return Unit.findByIdAndUpdate(_id, newData).exec();
+    return Unit.findByIdAndUpdate(_id, newData, { returnDocument: "after" }).exec();
 }
 
 /**
@@ -80,7 +92,7 @@ function deleteUnit(_id) {
 }
 
 const UnitRepo = {
-    findAll, findUnitsByWarehouse, findUnitByWarehouseAndProduct, findUnitsByProduct, createUnit, updateUnit, deleteUnit
+    findAll, findUnitById, findUnitsByWarehouse, findUnitByWarehouseAndProduct, findUnitsByProduct, createUnit, updateUnit, deleteUnit
 };
 
 export default UnitRepo;
