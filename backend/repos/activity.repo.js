@@ -29,9 +29,6 @@ function createActivity(data) {
     return Activity.create(data);
 }
 
-/**
- * Repo for Activities
- */
 const ActivityRepo = {
     findAll, findMostRecent, createActivity
 };

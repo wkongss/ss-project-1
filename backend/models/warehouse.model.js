@@ -17,7 +17,8 @@ const warehouseSchema = new Schema({
 
     capacity: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     }
 }, {
     toJSON: {

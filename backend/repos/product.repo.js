@@ -27,9 +27,6 @@ function deleteProduct(_id) {
     return Product.findOneAndDelete(_id);
 }
 
-/**
- * Repo for products
- */
 const ProductRepo = {
     findAll, createProduct, deleteProduct
 };

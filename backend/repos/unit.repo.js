@@ -79,9 +79,6 @@ function deleteUnit(_id) {
     return Unit.findByIdAndDelete(_id).exec();
 }
 
-/**
- * Repo for warehouse units
- */
 const UnitRepo = {
     findAll, findUnitsByWarehouse, findUnitByWarehouseAndProduct, findUnitsByProduct, createUnit, updateUnit, deleteUnit
 };
