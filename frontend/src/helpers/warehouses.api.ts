@@ -22,7 +22,7 @@ export interface ITransfer {
     quantity: number
 }
 
-const baseUrl = "http:/localhost:8080/api/v1/warehouses";
+const baseUrl = "http://localhost:8080/api/v1/warehouses";
 
 /**
  * Fetches a list of all warehouses
@@ -30,9 +30,15 @@ const baseUrl = "http:/localhost:8080/api/v1/warehouses";
 export async function getAllWarehouses(): Promise<IWarehouse[]> {
     const res = await fetch(baseUrl);
 
-    if (res.ok) {
-        return await res.json();
+    try {
+        console.log(await res.text());
+    } catch (error) {
+        console.error(error);
     }
+
+    // if (res.ok) {
+    //     return await res.json();
+    // }
 
     return [];
 }

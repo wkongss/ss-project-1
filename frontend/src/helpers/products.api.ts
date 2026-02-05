@@ -8,7 +8,7 @@ export interface IProduct {
     tags: string[]
 };
 
-const baseUrl = "http:/localhost:8080/api/v1/products";
+const baseUrl = "http://localhost:8080/api/v1/products";
 
 /**
  * Fetches a list of all Products

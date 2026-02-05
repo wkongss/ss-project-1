@@ -11,7 +11,7 @@ export interface IUnit {
     location?: string
 };
 
-const baseUrl = "http:/localhost:8080/api/v1/units";
+const baseUrl = "http://localhost:8080/api/v1/units";
 
 /**
  * Fetches a list of all Units
