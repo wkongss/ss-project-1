@@ -54,7 +54,7 @@ async function updateProduct(req, res) {
     try {
         const data = req.body;
         const document = await ProductService.updateProduct(data);
-        res.status(201).json(document);
+        res.status(200).json(document);
     } catch (error) {
         console.error(error);
         return res.status(500).send("Something went wrong!");
