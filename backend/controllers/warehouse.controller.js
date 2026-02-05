@@ -60,7 +60,7 @@ async function updateWarehouse(req, res) {
         const document = await WarehouseService.updateWarehouse(data);
         res.status(201).json(document);
     } catch (error) {
-        if (error instanceof RangeError) {
+        if (error instanceof RangeError || error instanceof ReferenceError) {
             return res.status(400).send(error.message);
         }
 

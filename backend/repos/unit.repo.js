@@ -6,8 +6,8 @@ import Unit from "../models/unit.model.js";
  */
 function findAll() {
     return Unit
-        .find().
-        populate(["warehouse", "product"])
+        .find()
+        .populate(["warehouse", "product"])
         .exec();
 }
 
@@ -19,8 +19,8 @@ function findAll() {
 function findUnitById(_id) {
     return Unit
         .findById(_id)
-        ?.populate(["warehouse", "product"])
-        ?.exec();
+        .populate(["warehouse", "product"])
+        .exec();
 };
 
 /**
@@ -51,7 +51,7 @@ function findUnitsByProduct(_id) {
  * Finds and returns a unique stock of a give warehouse and product id
  * @param {string} warehouseId The id of the warehouse
  * @param {string} productId The id of the product
- * @returns {Promise<Unit>} A promise containing a specific unit
+ * @returns {Promise<Unit | null>} A promise containing a specific unit
  */
 function findUnitByWarehouseAndProduct(warehouseId, productId) {
     return Unit
@@ -69,7 +69,7 @@ function findUnitByWarehouseAndProduct(warehouseId, productId) {
  * @returns {Promise<Unit>} A promise with the created unit
  */
 function createUnit(data) {
-    return Unit.create(data);
+    return Unit.create(data).populate(["warehouse", "product"]);
 }
 
 /**
@@ -79,7 +79,9 @@ function createUnit(data) {
  * @returns {Promise<Unit>} A promise with the updated unit
  */
 async function updateUnit(_id, newData) {
-    return Unit.findByIdAndUpdate(_id, newData, { returnDocument: "after" }).exec();
+    return Unit.findByIdAndUpdate(_id, newData, { returnDocument: "after" })
+        .populate(["warehouse", "product"])
+        .exec();
 }
 
 /**
