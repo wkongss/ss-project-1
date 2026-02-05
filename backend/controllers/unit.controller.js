@@ -14,8 +14,9 @@ async function getAllUnits(req, res) {
             data = await UnitService.findUnitsByProduct(product);
         } else {
             data = await UnitService.findAll();
-            return res.status(200).json(data);
         }
+        
+        return res.status(200).json(data);
     } catch (error) {
         console.error(error);
         return res.status(500).send("Something went wrong!");
@@ -51,7 +52,7 @@ async function createUnit(req, res) {
         const document = await UnitService.createUnit(data);
         res.status(201).json(document);
     } catch (error) {
-        if (error instanceof RangeError) {
+        if (error instanceof RangeError || error instanceof ReferenceError) {
             return res.status(400).send(error.message);
         }
 
@@ -69,7 +70,7 @@ async function updateUnit(req, res) {
         const document = await UnitService.updateUnit(data);
         res.status(201).json(document);
     } catch (error) {
-        if (error instanceof RangeError) {
+        if (error instanceof RangeError || error instanceof ReferenceError) {
             return res.status(400).send(error.message);
         }
 
