@@ -7,7 +7,6 @@ import Warehouse from "../models/warehouse.model.js";
 function findAll() {
     return Warehouse
         .find()
-        .populate("unitList")
         .exec();
 }
 
