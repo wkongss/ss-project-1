@@ -31,12 +31,12 @@ async function findWarehouseById(id) {
 async function createWarehouse(data) {
     const { capacity } = data;
 
-    if (capacity && capacity > 0) {
+    if (!capacity || capacity < 1) {
         throw new RangeError("Capacity must be positive");
     }
 
     const warehouseDoc = await WarehouseRepo.createWarehouse(data);
-    await ActivityRepo.createActivity({ type: "create", affected: [warehouseDoc._id] });
+    await ActivityRepo.createActivity({ action: "create", affected: [warehouseDoc._id] });
 
     return warehouseDoc;
 }
@@ -50,7 +50,7 @@ async function deleteWarehouse(id) {
     const warehouseDoc = await WarehouseRepo.deleteWarehouse(id);
 
     if (warehouseDoc) {
-        await ActivityRepo.createActivity({ type: "delete", affected: [warehouseDoc._id] });
+        await ActivityRepo.createActivity({ action: "delete", affected: [warehouseDoc._id] });
     }
 
     return warehouseDoc;
@@ -64,17 +64,27 @@ async function deleteWarehouse(id) {
 async function updateWarehouse(data) {
     const { _id, capacity } = data;
 
-    if (capacity && capacity > 0) {
+    if (!_id) {
+        throw new ReferenceError("Warehouse ID missing!");
+    }
+
+    const warehouseDoc = await WarehouseRepo.findWarehouseById(_id);
+
+    if (!capacity || capacity < 1) {
         throw new RangeError("Capacity must be positive");
     }
 
-    const warehouseDoc = await WarehouseRepo.updateWarehouse(_id, data);
-
-    if (warehouseDoc) {
-        await ActivityRepo.createActivity({ type: "update", affected: [warehouseDoc._id] });
+    if (warehouseDoc.currentCapacity > capacity) {
+        throw new RangeError("New capacity is less than current storage amount!")
     }
 
-    return warehouseDoc;
+    const updatedDoc = await WarehouseRepo.updateWarehouse(_id, data);
+
+    if (updatedDoc) {
+        await ActivityRepo.createActivity({ action: "update", affected: [updatedDoc._id] });
+    }
+
+    return updatedDoc;
 }
 
 /**
@@ -137,6 +147,7 @@ async function transferStock(source, destination, unitId, quantity) {
         let updatedDestination;
 
         if (!newUnit) {
+            // Unit doesn't exist at destination: create a new one
             const data = {
                 product: unit.product._id,
                 warehouse: destinationWarehouse._id,
@@ -145,6 +156,7 @@ async function transferStock(source, destination, unitId, quantity) {
 
             updatedDestination = await UnitRepo.createUnit(data);
         } else {
+            // Unit already exists: merge them together
             updatedDestination = await UnitRepo.updateUnit(newUnit._id, {
                 $inc: {
                     quantity: quantity
@@ -157,7 +169,7 @@ async function transferStock(source, destination, unitId, quantity) {
         await session.commitTransaction();
 
         await ActivityRepo.createActivity({ 
-            type: "transfer", 
+            action: "transfer", 
             affected: [source, destination], 
             description: `${quantity} units of ${unit.product.sku}` })
         return returnValue;

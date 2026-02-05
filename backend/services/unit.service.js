@@ -1,4 +1,6 @@
 import UnitRepo from "../repos/unit.repo.js";
+import ProductRepo from "../repos/product.repo.js";
+import WarehouseRepo from "../repos/warehouse.repo.js";
 import Unit from "../models/unit.model.js";
 
 /**
@@ -15,7 +17,7 @@ async function findAll() {
  * @returns {Promise<Unit | null>} The Unit document, or null if not found
  */
 async function findUnitById(id) {
-    return await UnitRepo.findById(id);
+    return await UnitRepo.findUnitById(id);
 }
 
 /**
@@ -42,10 +44,48 @@ async function findUnitsByProduct(id) {
  * @returns {Promise<Unit>} The unit document created
  */
 async function createUnit(data) {
-    const { quantity } = data;
+    const { product, warehouse, quantity, location } = data;
+    
+    if (!warehouse) {
+        throw new ReferenceError("Warehouse ID not provided!");
+    }
+    
+    if (!product) {
+        throw new ReferenceError("Product ID not provided!");
+    }
 
-    if (quantity && quantity > 0) {
+    if (!location) {
+        throw new ReferenceError("Location not provided!");
+    }
+
+    const unitDoc = await UnitRepo.findUnitByWarehouseAndProduct(warehouse, product);
+    const warehouseDoc = await WarehouseRepo.findWarehouseById(warehouse);
+    const productDoc = await ProductRepo.findProductById(product);
+
+    if (!warehouseDoc) {
+        throw new ReferenceError("Warehouse not found!");
+    }
+
+    if (!productDoc) {
+        throw new ReferenceError("Product not found!");
+    }
+
+    if (!quantity || quantity < 0) {
         throw new RangeError("Quantity must be non-negative!");
+    }
+
+    if (warehouseDoc.currentCapacity + quantity > warehouseDoc.capacity) {
+        throw new RangeError("Adding unit would exceed warehouse capacity!");
+    }
+
+    // If an identical entry exists, merges the quantities instead of creating
+    // a new document
+    if (unitDoc) {
+        return await UnitRepo.updateUnit(unitDoc._id, { 
+            $inc: {
+                quantity: quantity
+            }
+        });
     }
 
     return await UnitRepo.createUnit(data);
@@ -57,10 +97,44 @@ async function createUnit(data) {
  * @returns {Promise<Unit>} The updated unit document
  */
 async function updateUnit(data) {
-    const { _id, quantity } = data;
+    const { _id, product, warehouse, quantity } = data;
 
-    if (quantity && quantity > 0) {
+    if (!_id) {
+        throw new ReferenceError("No ID provided to update!");
+    }
+    
+    const unitDoc = await UnitRepo.findUnitById(_id);
+    
+    if (!unitDoc) {
+        throw new ReferenceError("Unit not found!");
+    }
+    
+    let warehouseDoc = unitDoc.warehouse;
+    
+    if (warehouse) {
+        warehouseDoc = await WarehouseRepo.findWarehouseById(warehouse);
+        
+        if (!warehouseDoc) {
+            throw new ReferenceError("Warehouse not found!");
+        }
+    }
+    
+    if (!quantity || quantity < 0) {
         throw new RangeError("Quantity must be non-negative!");
+    }
+
+    if (quantity) {
+        if (warehouseDoc.currentCapacity + (quantity - unitDoc.quantity) > warehouseDoc.capacity) {
+            throw new RangeError("Updating unit would exceed warehouse quantity!");
+        }
+    }
+
+    if (product) {
+        const productDoc = await ProductRepo.findProductById(product);
+
+        if (!productDoc) {
+            throw new ReferenceError("Product not found!");
+        }
     }
 
     return await UnitRepo.updateUnit(_id, data);
