@@ -58,7 +58,7 @@ async function updateWarehouse(req, res) {
     try {
         const data = req.body;
         const document = await WarehouseService.updateWarehouse(data);
-        res.status(201).json(document);
+        res.status(200).json(document);
     } catch (error) {
         if (error instanceof RangeError || error instanceof ReferenceError) {
             return res.status(400).send(error.message);
@@ -91,7 +91,7 @@ async function transferItems(req, res) {
     try {
         const { source, destination, unit, quantity } = req.body;
         const document = await WarehouseService.transferStock(source, destination, unit, quantity);
-        res.status(200).json(document);
+        res.status(201).json(document);
     } catch (error) {
         if (error instanceof RangeError || error instanceof ReferenceError) {
             return res.status(400).send(error.message);

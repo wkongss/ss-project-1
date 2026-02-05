@@ -68,7 +68,7 @@ async function updateUnit(req, res) {
     try {
         const data = req.body;
         const document = await UnitService.updateUnit(data);
-        res.status(201).json(document);
+        res.status(200).json(document);
     } catch (error) {
         if (error instanceof RangeError || error instanceof ReferenceError) {
             return res.status(400).send(error.message);
