@@ -9,7 +9,7 @@ async function getAllWarehouses(_, res) {
         return res.status(200).json(data);
     } catch (error) {
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -28,7 +28,7 @@ async function getWarehouseById(req, res) {
         return res.status(200).json(data);
     } catch (error) {
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -43,11 +43,11 @@ async function createWarehouse(req, res) {
         res.status(201).json(document);
     } catch (error) {
         if (error instanceof RangeError) {
-            return res.status(400).send(error.message);
+            return res.status(400).send({ message: error.message });
         }
 
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -61,11 +61,11 @@ async function updateWarehouse(req, res) {
         res.status(200).json(document);
     } catch (error) {
         if (error instanceof RangeError || error instanceof ReferenceError) {
-            return res.status(400).send(error.message);
+            return res.status(400).send({ message: error.message });
         }
 
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -80,7 +80,7 @@ async function deleteWarehouse(req, res) {
         res.sendStatus(204);
     } catch (error) {
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -94,7 +94,7 @@ async function transferItems(req, res) {
         res.status(201).json(document);
     } catch (error) {
         if (error instanceof RangeError || error instanceof ReferenceError) {
-            return res.status(400).send(error.message);
+            return res.status(400).send({ message: error.message });
         }
 
         console.error(error);

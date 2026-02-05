@@ -9,7 +9,7 @@ async function getAllProducts(_, res) {
         return res.status(200).json(data);
     } catch (error) {
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -28,7 +28,7 @@ async function getProductById(req, res) {
         return res.status(200).json(data);
     } catch (error) {
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -43,7 +43,7 @@ async function createProduct(req, res) {
         res.status(201).json(document);
     } catch (error) {
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -57,7 +57,7 @@ async function updateProduct(req, res) {
         res.status(200).json(document);
     } catch (error) {
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
@@ -72,7 +72,7 @@ async function deleteProduct(req, res) {
         res.sendStatus(204);
     } catch (error) {
         console.error(error);
-        return res.status(500).send("Something went wrong!");
+        return res.status(500).send({ message: "Something went wrong!" });
     }
 }
 
