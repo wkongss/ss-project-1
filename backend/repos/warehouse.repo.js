@@ -7,13 +7,14 @@ import Warehouse from "../models/warehouse.model.js";
 function findAll() {
     return Warehouse
         .find()
+        .populate("unitList")
         .exec();
 }
 
 /**
  * Finds and populates a warehouse by Id
  * @param {string} _id the ObjectId of the warehouse to get
- * @return {Promise<Warehouse>} A promise with the populated warehouse
+ * @return {Promise<Warehouse | null>} A promise with the populated warehouse
  */
 function findWarehouseById(id) {
     return Warehouse
@@ -28,7 +29,7 @@ function findWarehouseById(id) {
  * @returns {Promise<Warehouse>} A promise with all products
  */
 function createWarehouse(data) {
-    return Warehouse.create(data);
+    return Warehouse.create(data).populate("unitList");
 }
 
 /**
@@ -47,7 +48,9 @@ function deleteWarehouse(_id) {
  * @returns {Promise<Document>} the updated document (if available)
  */
 function updateWarehouse(_id, newData) {
-    return Warehouse.findByIdAndUpdate(_id, newData, { returnDocument: "after" }).exec();
+    return Warehouse.findByIdAndUpdate(_id, newData, { returnDocument: "after" })
+        .populate("unitList")
+        .exec();
 }
 
 const WarehouseRepo = {

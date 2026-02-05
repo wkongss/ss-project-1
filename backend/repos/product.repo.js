@@ -19,17 +19,17 @@ function findProductById(_id) {
 
 /**
  * Creates a product with the given data
- * @param {{ sku: string, name: string, description?: string }} data 
+ * @param {{ sku: string, name: string, description?: string, tags: string[] }} data 
  * @returns {Promise<Product>} A promise of the document created
  */
 function createProduct(data) {
-    return Product.create(data).exec();
+    return Product.create(data);
 }
 
 /**
  * Updates a product with given data
  * @param {string} _id The id of the product to update
- * @param {{ sku: string, name: string, description?: string }} newData 
+ * @param {{ sku: string, name: string, description?: string, tags: string[] }} newData 
  * @returns {Promise<Product>} A promise with the updated unit
  */
 async function updateProduct(_id, newData) {
@@ -43,7 +43,7 @@ async function updateProduct(_id, newData) {
  * @returns {Promise<Product>} A promise of the document deleted (if available)
  */
 function deleteProduct(_id) {
-    return Product.findOneAndDelete(_id).exec();
+    return Product.findByIdAndDelete(_id).exec();
 }
 
 const ProductRepo = {
