@@ -16,13 +16,14 @@ function findAll() {
  */
 function findMostRecent(limit) {
     return Activity
-        .find({ sort: { createdAt: -1 } })
+        .find()
+        .sort({ createdAt: -1})
         .limit(limit);
 }
 
 /**
  * Creates a new activity with given data
- * @param {{ type: string, affected: Types.ObjectId[], description?: string }} data 
+ * @param {{ action: string, affected: Types.ObjectId[], description?: string }} data 
  * @returns {Promise<Document>} The document for the new activity created
  */
 function createActivity(data) {

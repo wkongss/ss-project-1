@@ -14,9 +14,9 @@ async function getAll(_, res) {
  */
 async function getMostRecent(req, res) {
     const { limit } = req.params;
-    const data = ActivityService.findMostRecent(limit);
+    const data = await ActivityService.findMostRecent(limit);
 
-    return res.status(200),json(data);
+    return res.status(200).json(data);
 }
 
 const ActivityController = {
