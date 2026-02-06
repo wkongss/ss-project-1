@@ -101,7 +101,7 @@ async function createUnit(data) {
  * @returns {Promise<Unit>} The updated unit document
  */
 async function updateUnit(data) {
-    const { _id, product, warehouse, quantity } = data;
+    const { _id, product, warehouse, quantity, location } = data;
 
     if (!_id) {
         throw new ReferenceError("No ID provided to update!");
@@ -144,7 +144,7 @@ async function updateUnit(data) {
     if (product && warehouse) {
         const combinedDoc = await UnitRepo.findUnitByWarehouseAndProduct(warehouse, product);
 
-        if (combinedDoc._id !== _id) {
+        if (combinedDoc._id != _id && location != null) {
             throw new ReferenceError("Product already exists at a different location!");
         }
     }
