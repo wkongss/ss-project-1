@@ -69,7 +69,7 @@ function findUnitByWarehouseAndProduct(warehouseId, productId) {
  * @returns {Promise<Unit>} A promise with the created unit
  */
 function createUnit(data) {
-    return Unit.create(data).populate(["warehouse", "product"]);
+    return Unit.create(data);
 }
 
 /**
