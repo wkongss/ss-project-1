@@ -22,7 +22,7 @@ export interface ITransfer {
     quantity: number
 }
 
-const baseUrl = "http:/localhost:8080/api/v1/warehouses";
+const baseUrl = "http://localhost:8080/api/v1/warehouses";
 
 /**
  * Fetches a list of all warehouses
@@ -40,46 +40,55 @@ export async function getAllWarehouses(): Promise<IWarehouse[]> {
 /**
  * Fetches a populated warehouse object with given id
  */
-export async function getWarehouseById(id: string): Promise<IWarehouse | null> {
+export async function getWarehouseById(id: string): Promise<IWarehouse> {
     const res = await fetch(`${baseUrl}/${id}`);
+    const data = await res.json();
 
     if (res.ok) {
-        return await res.json();
+        return data;
     }
 
-    return null;
+    throw new Error(data.message);
 }
 
 /**
  * Creates and returns a new warehouse
  */
-export async function createWarehouse(data: IWarehouse): Promise<IWarehouse | null> {
-    const res = await fetch(baseUrl, { 
-        method: "POST", 
-        body: JSON.stringify(data) 
+export async function createWarehouse(warehouse: IWarehouse): Promise<IWarehouse> {
+    const res = await fetch(baseUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(warehouse)
     });
+    const data = await res.json();
 
     if (res.ok) {
-        return await res.json();
+        return data;
     }
 
-    return null;
+    throw new Error(data.message);
 }
 
 /**
  * Updates and returns a warehouse
  */
-export async function updateWarehouse(data: IWarehouse): Promise<IWarehouse | null> {
-    const res = await fetch(baseUrl, { 
-        method: "PUT", 
-        body: JSON.stringify(data) 
+export async function updateWarehouse(warehouse: IWarehouse): Promise<IWarehouse> {
+    const res = await fetch(baseUrl, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(warehouse)
     });
+    const data = await res.json();
 
     if (res.ok) {
-        return await res.json();
+        return data;
     }
 
-    return null;
+    throw new Error(data.message);
 }
 
 /**
@@ -87,7 +96,7 @@ export async function updateWarehouse(data: IWarehouse): Promise<IWarehouse | nu
  */
 export async function deleteWarehouse(id: string): Promise<boolean> {
     const res = await fetch(`${baseUrl}/${id}`, { method: "DELETE" });
-    
+
     return res.ok;
 }
 
@@ -95,14 +104,19 @@ export async function deleteWarehouse(id: string): Promise<boolean> {
  * Transfers units between warehouses
  */
 export async function transfer(body: ITransfer): Promise<IWarehouse[]> {
-    const res = await fetch(`${baseUrl}/transfer`, { 
-        method: "POST", 
-        body: JSON.stringify(body) 
+    console.log(body);
+    const res = await fetch(`${baseUrl}/transfer`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
     });
+    const data = await res.json();
 
     if (res.ok) {
-        return await res.json();
+        return data;
     }
 
-    return [];
+    throw new Error(data.message);
 }
