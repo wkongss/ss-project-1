@@ -5,9 +5,10 @@ import type { IWarehouse } from "./warehouses.api"
  */
 export interface IActivity {
     _id: string,
-    type: string,
+    action: string,
     affected: IWarehouse[],
-    description?: string
+    description?: string,
+    createdAt: string
 }
 
 const baseUrl = "http://localhost:8080/api/v1/activities";

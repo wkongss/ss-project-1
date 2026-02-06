@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import type { IWarehouse } from "../../helpers/api/warehouses.api";
-import { ListGroup } from "react-bootstrap";
+import ListGroup from "react-bootstrap/ListGroup";
 
 interface WarehouseSidebarProps {
     warehouses: IWarehouse[],
@@ -11,26 +11,26 @@ interface WarehouseSidebarProps {
 export default function WarehouseSidebar({ warehouses, selected, handleSelection }: WarehouseSidebarProps) {
     return (
         <>
-            <ListGroup variant="flush">
-                {warehouses.map((warehouse) => {
-                    const isSelected = selected === warehouse._id;
+            <ListGroup variant="flush" className="mt-4">
+                {warehouses.map((e) => {
+                    const isSelected = selected === e._id;
 
                     return (
                         <ListGroup.Item
-                            key={warehouse._id}
+                            key={e._id}
                             action
                             active={isSelected}
-                            onClick={() => handleSelection(warehouse._id)}
+                            onClick={() => handleSelection(e._id)}
                             className={`p-3 ${isSelected ? "bg-primary" : "bg-transparent"}`}
                             as={Link}
-                            to={`/warehouses/${warehouse._id}`}
+                            to={`/warehouses/${e._id}`}
                         >
                             <div className="me-2">
                                 <div className={`fw-bold`}>
-                                    {warehouse.name}
+                                    {e.name}
                                 </div>
                                 <div className={`small`}>
-                                    {warehouse.location}
+                                    {e.location}
                                 </div>
                             </div>
                         </ListGroup.Item>

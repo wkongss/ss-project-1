@@ -5,14 +5,18 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
+import { PlusCircleFill } from "react-bootstrap-icons";
 import { getWarehouseById, transfer, type ITransfer, type IWarehouse } from "../helpers/api/warehouses.api";
 import { createUnit, deleteUnit, getUnitsByWarehouse, updateUnit, type IUnit } from "../helpers/api/units.api";
+import inventorySearch from "../helpers/search/inventorySearch";
+import nestedAccess from "../helpers/search/nestedAccess";
 
 import UnitActionRow from "../components/elements/UnitActionRow";
+import SortableHeader from "../components/elements/SortableHeader";
 import ConfirmModal from "../components/modals/ConfirmModal";
 import UpdateInventoryModal from "../components/modals/UpdateInventoryModal";
 import TransferModal from "../components/modals/TransferModal";
-import { PlusSquareFill } from "react-bootstrap-icons";
+import CreateInventoryModal from "../components/modals/CreateInventoryModal";
 
 interface InventoryDetailsProps {
     warehouse: IWarehouse,
@@ -21,8 +25,13 @@ interface InventoryDetailsProps {
 
 export default function InventoryDetails({ warehouse, setWarehouse }: InventoryDetailsProps) {
     const [unitList, setUnitList] = useState<IUnit[]>([]);
+    const [filteredList, setFilteredList] = useState<IUnit[]>([]);
+    const [sortedList, setSortedList] = useState<IUnit[]>([]);
     const [activeUnit, setActiveUnit] = useState<IUnit | undefined>(undefined);
     const [search, setSearch] = useState("");
+    const [filters, setFilters] = useState("");
+    const [sortParam, setSortParam] = useState("product.sku");
+    const [sortDir, setSortDir] = useState(1);
 
     useEffect(() => {
         getUnitsByWarehouse(warehouse._id)
@@ -30,6 +39,31 @@ export default function InventoryDetails({ warehouse, setWarehouse }: InventoryD
                 setUnitList(data);
             });
     }, [warehouse]);
+
+    useEffect(() => {
+        setFilteredList(inventorySearch(unitList, filters));
+    }, [unitList, filters]);
+
+    useEffect(() => {
+        setSortedList(() => {
+            return filteredList.toSorted((a: any, b: any) => {
+                const param1 = nestedAccess(a, sortParam);
+                const param2 = nestedAccess(b, sortParam);
+
+                if (param1 == null) {
+                    return sortDir;
+                } else if (param2 == null) {
+                    return -sortDir;
+                }
+
+                if (typeof param1 === "string") {
+                    return sortDir * param1.localeCompare(param2);
+                }
+
+                return sortDir * (param1 - param2);
+            })
+        });
+    }, [filteredList, sortParam, sortDir]);
 
     // Handles display of confirmation modal
     const [showUnitDeleteModal, setShowUnitDeleteModal] = useState(false);
@@ -58,6 +92,10 @@ export default function InventoryDetails({ warehouse, setWarehouse }: InventoryD
 
     // Handles display of unit create modal
     const [showUnitCreateModal, setShowUnitCreateModal] = useState(false);
+
+    /**
+     * Callback function for creating units
+     */
     async function handleUnitCreate(data: IUnit) {
         await createUnit(data);
         setWarehouse(await getWarehouseById(warehouse._id));
@@ -81,20 +119,36 @@ export default function InventoryDetails({ warehouse, setWarehouse }: InventoryD
             <Container fluid className="p-0 m-0 mt-5">
                 <Row>
                     <Col>
-                        <Form>
-                            <Form.Group className="mb-3" controlId="formQuantity">
+                        <Form action={"#"} onSubmit={(e) => {
+                            e.preventDefault();
+                            setFilters(search);
+                        }}
+                        >
+                            <Form.Group className="mb-3" controlId="formSearch">
                                 <Form.Control
                                     value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
+                                    onChange={(e) => {
+                                        setSearch(e.target.value);
+                                        if (!e.target.value) {
+                                            setFilters("");
+                                        }
+                                    }}
                                     min={0}
                                     placeholder="Search"
                                 />
                             </Form.Group>
                         </Form>
                     </Col>
-                    <Col>
-                        <Button>
+                    <Col className="d-flex justify-content-between align-items-start">
+                        <Button onClick={() => setFilters(search)}>
                             Search
+                        </Button>
+                        <Button
+                            className="d-flex justify-content-center align-items-center gap-2"
+                            onClick={() => setShowUnitCreateModal(true)}
+                        >
+                            Item
+                            <PlusCircleFill />
                         </Button>
                     </Col>
                 </Row>
@@ -102,17 +156,37 @@ export default function InventoryDetails({ warehouse, setWarehouse }: InventoryD
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>SKU</th>
-                        <th>Name</th>
-                        <th>Description</th>
+                        <SortableHeader
+                            setParams={(asc) => {
+                                setSortDir(asc);
+                                setSortParam("product.sku");
+                            }}>SKU</SortableHeader>
+                        <SortableHeader
+                            setParams={(asc) => {
+                                setSortDir(asc);
+                                setSortParam("product.name");
+                            }}>Name</SortableHeader>
+                        <SortableHeader
+                            setParams={(asc) => {
+                                setSortDir(asc);
+                                setSortParam("product.description");
+                            }}>Description</SortableHeader>
                         <th>Tags</th>
-                        <th>Quantity</th>
-                        <th>Location</th>
+                        <SortableHeader
+                            setParams={(asc) => {
+                                setSortDir(asc);
+                                setSortParam("quantity");
+                            }}>
+                            Quantity</SortableHeader>
+                        <SortableHeader setParams={(asc) => {
+                            setSortDir(asc);
+                            setSortParam("location");
+                        }}>Location</SortableHeader>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {unitList.map((e) => {
+                    {sortedList.map((e) => {
                         return (
                             <tr key={`tr-${e._id}`}>
                                 <td>{e.product.sku}</td>
@@ -146,6 +220,13 @@ export default function InventoryDetails({ warehouse, setWarehouse }: InventoryD
                 oldData={activeUnit!}
                 handleClose={() => setShowUnitEditModal(false)}
                 handleConfirm={(data) => handleUnitEdit(data)}
+            />
+
+            <CreateInventoryModal
+                show={showUnitCreateModal}
+                warehouse={warehouse}
+                handleClose={() => setShowUnitCreateModal(false)}
+                handleConfirm={(data) => handleUnitCreate(data)}
             />
 
             <TransferModal

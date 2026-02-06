@@ -15,7 +15,7 @@ export default function UnitActionRow({ setActive, showEditModal, showDeleteModa
     <ButtonGroup>
       <Button
         variant="outline-light"
-        className="rounded-circle border-0 d-flex justify-content-center align-items-center py-2"
+        className="rounded-circle border-0"
         onClick={() => {
           setActive();
           showEditModal();
@@ -24,7 +24,7 @@ export default function UnitActionRow({ setActive, showEditModal, showDeleteModa
       </Button>
       <Button 
         variant="outline-light" 
-        className="rounded-circle border-0 d-flex justify-content-center align-items-center py-2"
+        className="rounded-circle border-0"
         onClick={() => {
           setActive();
           showDeleteModal();
@@ -33,7 +33,7 @@ export default function UnitActionRow({ setActive, showEditModal, showDeleteModa
       </Button>
       <Button 
         variant="outline-light" 
-        className="rounded-circle border-0 d-flex justify-content-center align-items-center py-2"
+        className="rounded-circle border-0"
         onClick={() => {
           setActive();
           showTransferModal();

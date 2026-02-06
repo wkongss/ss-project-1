@@ -43,12 +43,13 @@ export async function getProductById(id: string): Promise<IProduct> {
  * Creates and returns a new Product
  */
 export async function createProduct(product: IProduct): Promise<IProduct> {
+    const { _id, ...rest } = product;
     const res = await fetch(baseUrl, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(product)
+        body: JSON.stringify(rest)
     });
     const data = await res.json();
 
@@ -63,12 +64,13 @@ export async function createProduct(product: IProduct): Promise<IProduct> {
  * Updates and returns a Product
  */
 export async function updateProduct(product: IProduct): Promise<IProduct> {
+    const { _id, ...rest } = product;
     const res = await fetch(baseUrl, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(product)
+        body: JSON.stringify(rest)
     });
 
     const data = await res.json();
@@ -85,11 +87,6 @@ export async function updateProduct(product: IProduct): Promise<IProduct> {
  */
 export async function deleteProduct(id: string): Promise<boolean> {
     const res = await fetch(`${baseUrl}/${id}`, { method: "DELETE" });
-    const data = await res.json();
 
-    if (res.ok) {
-        return data;
-    }
-
-    throw new Error(data.message);
+    return res.ok;
 }

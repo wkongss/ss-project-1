@@ -8,9 +8,10 @@ import Modal from "react-bootstrap/Modal";
 import type { IUnit } from "../../helpers/api/units.api";
 import type { IProduct } from "../../helpers/api/products.api";
 import { getAllProducts } from "../../helpers/api/products.api";
+import type { IWarehouse } from "../../helpers/api/warehouses.api";
 
-interface UpdateInventoryModalProps {
-    oldData: IUnit,
+interface CreateInventoryModalProps {
+    warehouse: IWarehouse,
     show: boolean,
     handleClose: () => void,
     handleConfirm: (data: IUnit) => Promise<void>
@@ -19,11 +20,11 @@ interface UpdateInventoryModalProps {
 /**
  * Represents a modal for updating a unit in a warehouse
  */
-export default function UpdateInventoryModal({ oldData, show, handleClose, handleConfirm }: UpdateInventoryModalProps) {
+export default function CreateInventoryModal({ warehouse, show, handleClose, handleConfirm }: CreateInventoryModalProps) {
     const [productList, setProductList] = useState<IProduct[]>([]);
-    const [product, setProduct] = useState(oldData?.product);
-    const [quantity, setQuantity] = useState(oldData?.quantity);
-    const [location, setLocation] = useState(oldData?.location);
+    const [product, setProduct] = useState<IProduct | undefined>(undefined);
+    const [quantity, setQuantity] = useState(0);
+    const [location, setLocation] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
@@ -34,15 +35,20 @@ export default function UpdateInventoryModal({ oldData, show, handleClose, handl
     }, []);
 
     useEffect(() => {
-        setProduct(oldData?.product);
-        setQuantity(oldData?.quantity);
-        setLocation(oldData?.location);
+        setQuantity(0);
+        setProduct(undefined);
+        setLocation("");
         setErrorMessage("");
-    }, [oldData])
+    }, [show])
 
     async function handleSubmit() {
+        if (!product) {
+            throw new Error("Please choose a product to add!");
+        }
+
         const data = {
-            ...oldData,
+            _id: "",
+            warehouse: warehouse,
             product: product,
             quantity: quantity,
             location: location
@@ -60,7 +66,7 @@ export default function UpdateInventoryModal({ oldData, show, handleClose, handl
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>{`Update ${oldData?.product.name}`}</Modal.Title>
+                <Modal.Title>{`New ${warehouse?.name} stock`}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
@@ -108,8 +114,8 @@ export default function UpdateInventoryModal({ oldData, show, handleClose, handl
                 <Button variant="secondary" onClick={handleClose}>
                     Cancel
                 </Button>
-                <Button variant="primary" onClick={handleSubmit}>
-                    Update
+                <Button variant="success" onClick={handleSubmit}>
+                    Create
                 </Button>
             </Modal.Footer>
         </Modal>

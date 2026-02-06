@@ -74,15 +74,16 @@ export async function getUnitsByWarehouse(id: string): Promise<IUnit[]> {
  * Creates and returns a new Unit
  */
 export async function createUnit(unit: IUnit): Promise<IUnit> {
+    const { _id, ...rest } = unit;
     const res = await fetch(baseUrl, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            ...unit,
-            warehouse: unit.warehouse._id,
-            product: unit.product._id
+            ...rest,
+            warehouse: rest.warehouse._id,
+            product: rest.product._id
         })
     });
     const data = await res.json();
@@ -98,15 +99,16 @@ export async function createUnit(unit: IUnit): Promise<IUnit> {
  * Updates and returns a unit
  */
 export async function updateUnit(unit: IUnit): Promise<IUnit> {
+    const { _id, ...rest } = unit;
     const res = await fetch(baseUrl, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            ...unit,
-            warehouse: unit.warehouse._id,
-            product: unit.product._id
+            ...rest,
+            warehouse: rest.warehouse._id,
+            product: rest.product._id
         })
     });
     const data = await res.json();

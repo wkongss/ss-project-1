@@ -55,12 +55,13 @@ export async function getWarehouseById(id: string): Promise<IWarehouse> {
  * Creates and returns a new warehouse
  */
 export async function createWarehouse(warehouse: IWarehouse): Promise<IWarehouse> {
+    const { _id, ...rest } = warehouse;
     const res = await fetch(baseUrl, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(warehouse)
+        body: JSON.stringify(rest)
     });
     const data = await res.json();
 

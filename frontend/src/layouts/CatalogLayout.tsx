@@ -7,48 +7,48 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import { PlusCircleFill } from "react-bootstrap-icons";
 
-import { getAllWarehouses, createWarehouse, type IWarehouse } from "../helpers/api/warehouses.api";
-import WarehouseSidebar from "../components/elements/WarehouseSidebar";
-import CreateWarehouseModal from "../components/modals/CreateWarehouseModal";
+import { getAllProducts, createProduct, type IProduct } from "../helpers/api/products.api";
+import CatalogSidebar from "../components/elements/CatalogSidebar";
+import CreateProductModal from "../components/modals/CreateProductModal";
 
 /**
- * Manages the layout and components of the /warehouse page
+ * Manages the layout and components of the /catalog page
  */
-export default function WarehouseLayout() {
-    const [warehouseList, setWarehouseList] = useState<IWarehouse[]>([]);
+export default function CatalogLayout() {
+    const [productList, setProductList] = useState<IProduct[]>([]);
     const [selected, setSelected] = useState("");
 
     /**
-     * Repopulates warehouse array
+     * Repopulates Product array
      */
-    async function refreshWarehouses() {
-        const data = await getAllWarehouses();
-        setWarehouseList(data);
+    async function refreshCatalog() {
+        const data = await getAllProducts();
+        setProductList(data);
     };
 
     /**
-     * Resets selection when current warehouse is deleted
+     * Resets selection when current Product is deleted
      */
     async function resetSelected() {
         setSelected("");
     }
 
     useEffect(() => {
-        refreshWarehouses();
+        refreshCatalog();
     }, []);
 
-    // Handles display of warehouse create modal
-    const [showWarehouseCreateModal, setShowWarehouseCreateModal] = useState(false);
+    // Handles display of Product create modal
+    const [showProductCreateModal, setShowProductCreateModal] = useState(false);
 
     /**
-     * Callback function for creating Warehouses
+     * Callback function for creating Products
      */
-    async function handleWarehouseCreate(data: IWarehouse) {
-        const newData = await createWarehouse(data);
-        setWarehouseList((state) => {
+    async function handleProductCreate(data: IProduct) {
+        const newData = await createProduct(data);
+        setProductList((state) => {
             return [...state, newData];
         });
-        setShowWarehouseCreateModal(false);
+        setShowProductCreateModal(false);
     }
 
     return (
@@ -58,34 +58,34 @@ export default function WarehouseLayout() {
                     <Col md={3}>
                         <Row>
                             <Col>
-                                <h3>Warehouses</h3>
+                                <h3>Products</h3>
                             </Col>
                             <Col className="d-flex justify-content-end">
                                 <Button 
                                     className="d-flex align-items-center justify-content-center circle-rounded gap-2"
-                                    onClick={() => setShowWarehouseCreateModal(true)}
+                                    onClick={() => setShowProductCreateModal(true)}
                                 >
                                     New
                                     <PlusCircleFill />
                                 </Button>
                             </Col>
                         </Row>
-                        <WarehouseSidebar
-                            warehouses={warehouseList}
+                        <CatalogSidebar
+                            products={productList}
                             selected={selected}
                             handleSelection={(index: string) => setSelected(index)}
                         />
                     </Col>
                     <Col md={9}>
-                        <Outlet context={{ refreshWarehouses, resetSelected }} />
+                        <Outlet context={{ refreshCatalog, resetSelected }} />
                     </Col>
                 </Row>
             </Container>
 
-            <CreateWarehouseModal
-                show={showWarehouseCreateModal}
-                handleClose={() => setShowWarehouseCreateModal(false)}
-                handleConfirm={(data) => handleWarehouseCreate(data)}
+            <CreateProductModal
+                show={showProductCreateModal}
+                handleClose={() => setShowProductCreateModal(false)}
+                handleConfirm={(data) => handleProductCreate(data)}
             />
         </>
     );
