@@ -70,7 +70,7 @@ async function createUnit(data) {
         throw new ReferenceError("Product not found!");
     }
 
-    if (!quantity || quantity < 0) {
+    if (quantity == null || quantity < 0) {
         throw new RangeError("Quantity must be non-negative!");
     }
 
@@ -81,11 +81,15 @@ async function createUnit(data) {
     // If an identical entry exists, merges the quantities instead of creating
     // a new document
     if (unitDoc) {
-        return await UnitRepo.updateUnit(unitDoc._id, { 
-            $inc: {
-                quantity: quantity
-            }
-        });
+        if (unitDoc.location === location) {
+            return await UnitRepo.updateUnit(unitDoc._id, { 
+                $inc: {
+                    quantity: quantity
+                }
+            });
+        } else {
+            throw new ReferenceError("Product already exists at a different location!");
+        }
     }
 
     return await UnitRepo.createUnit(data);
@@ -119,7 +123,7 @@ async function updateUnit(data) {
         }
     }
     
-    if (!quantity || quantity < 0) {
+    if (quantity == null || quantity < 0) {
         throw new RangeError("Quantity must be non-negative!");
     }
 
@@ -134,6 +138,14 @@ async function updateUnit(data) {
 
         if (!productDoc) {
             throw new ReferenceError("Product not found!");
+        }
+    }
+
+    if (product && warehouse) {
+        const combinedDoc = await UnitRepo.findUnitByWarehouseAndProduct(warehouse, product);
+
+        if (combinedDoc._id !== _id) {
+            throw new ReferenceError("Product already exists at a different location!");
         }
     }
 
