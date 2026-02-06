@@ -6,47 +6,46 @@ import Alert from "react-bootstrap/Alert";
 import Modal from "react-bootstrap/Modal";
 
 import type { IUnit } from "../../helpers/api/units.api";
-import { getAllWarehouses, type ITransfer, type IWarehouse } from "../../helpers/api/warehouses.api";
+import type { IProduct } from "../../helpers/api/products.api";
+import { getAllProducts } from "../../helpers/api/products.api";
 
-interface TransferModalProps {
-    source: IWarehouse,
-    unit: IUnit,
+interface UpdateInventoryModalProps {
+    oldData: IUnit,
     show: boolean,
     handleClose: () => void,
-    handleConfirm: (data: ITransfer) => Promise<void>
+    handleConfirm: (data: IUnit) => Promise<void>
 }
 
 /**
- * Represents a modal for transferring units between warehouses
+ * Represents a modal for updating a unit in a warehouse
  */
-export default function TransferModal({ source, unit, show, handleClose, handleConfirm }: TransferModalProps) {
-    const [warehouseList, setWarehouseList] = useState<IWarehouse[]>([]);
-    const [filteredList, setFilteredList] = useState<IWarehouse[]>([])
-    const [destination, setDestination] = useState<IWarehouse | undefined>(undefined);
-    const [quantity, setQuantity] = useState(unit?.quantity);
+export default function UpdateInventoryModal({ oldData, show, handleClose, handleConfirm }: UpdateInventoryModalProps) {
+    const [productList, setProductList] = useState<IProduct[]>([]);
+    const [product, setProduct] = useState(oldData?.product);
+    const [quantity, setQuantity] = useState(oldData?.quantity);
+    const [location, setLocation] = useState(oldData?.location);
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        getAllWarehouses()
+        getAllProducts()
             .then((res) => {
-                setWarehouseList(res);
+                setProductList(res);
             });
     }, []);
 
     useEffect(() => {
-        setQuantity(unit?.quantity);
-        const updatedList = warehouseList.filter((e) => e._id !== source?._id)
-        setFilteredList(updatedList);
-        setDestination(updatedList[0]);
+        setProduct(oldData?.product);
+        setQuantity(oldData?.quantity);
+        setLocation(oldData?.location);
         setErrorMessage("");
-    }, [unit])
+    }, [oldData])
 
     async function handleSubmit() {
         const data = {
-            source: source?._id,
-            destination: destination!?._id,
-            unit: unit?._id,
-            quantity: quantity
+            ...oldData,
+            product: product,
+            quantity: quantity,
+            location: location
         };
 
         try {
@@ -61,26 +60,26 @@ export default function TransferModal({ source, unit, show, handleClose, handleC
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-                <Modal.Title>{`Transfer ${unit?.product.name}`}</Modal.Title>
+                <Modal.Title>{`Update ${oldData?.product.name}`}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
 
                 <Form>
-                    <Form.Group className="mb-3" controlId="formDestination">
-                        <Form.Label>Destination Warehouse</Form.Label>
+                    <Form.Group className="mb-3" controlId="formProduct">
+                        <Form.Label>Product</Form.Label>
                         <Form.Select
-                            value={destination?._id}
+                            value={product?.sku}
                             onChange={(e) => {
-                                const selected = filteredList.find((w) => w._id === e.target.value);
+                                const selected = productList.find(p => p.sku === e.target.value);
                                 if (selected) {
-                                    setDestination(selected)
+                                    setProduct(selected)
                                 };
                             }}
                         >
-                            {filteredList.map((wh) => (
-                                <option key={`transfer-${wh._id}`} value={wh._id}>
-                                    {`${wh.name}`}
+                            {productList.map((p) => (
+                                <option key={p._id} value={p.sku}>
+                                    {p.name} ({p.sku})
                                 </option>
                             ))}
                         </Form.Select>
@@ -95,6 +94,15 @@ export default function TransferModal({ source, unit, show, handleClose, handleC
                             min={0}
                         />
                     </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="formLocation">
+                        <Form.Label>Location</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                        />
+                    </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
@@ -102,7 +110,7 @@ export default function TransferModal({ source, unit, show, handleClose, handleC
                     Cancel
                 </Button>
                 <Button variant="primary" onClick={handleSubmit}>
-                    Transfer
+                    Update
                 </Button>
             </Modal.Footer>
         </Modal>

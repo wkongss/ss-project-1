@@ -9,7 +9,7 @@ export default function SiteNavBar() {
     <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
       <Container>
         <Navbar.Brand as={Link} to="/">
-            <BoxSeamFill/> Warehouse Management
+            <BoxSeamFill color="orange" /> Warehouse Management
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
