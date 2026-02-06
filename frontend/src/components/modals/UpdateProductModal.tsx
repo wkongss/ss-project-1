@@ -34,7 +34,7 @@ export default function CreateProductModal({ oldData, show, handleClose, handleC
 
     async function handleSubmit() {
         const data = {
-            _id: "",
+            ...oldData,
             sku: sku,
             name: name,
             description: description,
