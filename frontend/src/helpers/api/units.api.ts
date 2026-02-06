@@ -99,16 +99,15 @@ export async function createUnit(unit: IUnit): Promise<IUnit> {
  * Updates and returns a unit
  */
 export async function updateUnit(unit: IUnit): Promise<IUnit> {
-    const { _id, ...rest } = unit;
     const res = await fetch(baseUrl, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            ...rest,
-            warehouse: rest.warehouse._id,
-            product: rest.product._id
+            ...unit,
+            warehouse: unit.warehouse._id,
+            product: unit.product._id
         })
     });
     const data = await res.json();
