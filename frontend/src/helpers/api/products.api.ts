@@ -64,13 +64,12 @@ export async function createProduct(product: IProduct): Promise<IProduct> {
  * Updates and returns a Product
  */
 export async function updateProduct(product: IProduct): Promise<IProduct> {
-    const { _id, ...rest } = product;
     const res = await fetch(baseUrl, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(rest)
+        body: JSON.stringify(product)
     });
 
     const data = await res.json();
