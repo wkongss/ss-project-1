@@ -29,7 +29,7 @@ function findWarehouseById(id) {
  * @returns {Promise<Warehouse>} A promise with all products
  */
 function createWarehouse(data) {
-    return Warehouse.create(data).populate("unitList");
+    return Warehouse.create(data);
 }
 
 /**
